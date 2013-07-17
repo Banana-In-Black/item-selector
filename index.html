@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<title>item-selector example</title>
+
+<script src="lib/jquery-1.10.2.js"></script>
+<script src="lib/backbone-dependency/underscore-1.5.1.js"></script>
+<script src="lib/backbone-1.0.0.js"></script>
+<script src="item-selector.js"></script>
+
+<link rel=stylesheet type="text/css" href="css/item-selector.css">
+
+<script type="text/javascript">
+$(function() {
+    var items = [{
+        name: 'testItem1'
+    }, {
+        attribute1: 'This is for long text testing.'
+    }];
+    
+    var items2 = [{
+        name: 'testItem1'
+    }, {
+        attribute1: 'This is for long text testing.'
+    }, {
+        name: 'test3'
+    }, {
+        name: 'test4'
+    }, {
+        name: 'test5'
+    }, {
+        name: 'test6'
+    }];
+    
+    var items3 = items.concat(items2).concat(items);
+    var items4 = items3.concat(items2);
+    
+    new ItemsView({     
+        collection: items
+    }).render().appendTo('body');
+    
+    $('body').append('<br/>');
+    
+    new ItemsView({     
+        collection: items2
+    }).render().appendTo('body');
+    
+    $('body').append('<br/>');
+    
+    new ItemsView({     
+        collection: items3
+    }).render().appendTo('body');
+    
+    $('body').append('<br/>');
+    
+    new ItemsView({     
+        collection: items4
+    }).render().appendTo('body');
+})
+</script>
+</head>
+
+<body>
+Helloworld
+</body>
+
+</html>
