@@ -8,13 +8,13 @@ Item = Backbone.Model.extend({
 });
 
 ItemView = Backbone.View.extend({
-    className: 'is-item-box is-clickable',
+    className: 'is-item-box is-clickable pull-left',
     template:
         '<img class="is-item-icon" src="<%= icon %>">' +
         '<div class="is-item-attributes">' +
-            '<div class="is-item-name is-text-ovlerfow-el"><%= name %></div>' +
-            '<div class="is-item-attribute-1 is-text-ovlerfow-el"><%= attribute1 %></div>' +
-            '<div class="is-item-attribute-2 is-text-ovlerfow-el"><%= attribute2 %></div>' +
+            '<div class="is-item-name is-text-overflow-ellipsis"><%= name %></div>' +
+            '<div class="is-item-attribute-1 is-text-overflow-ellipsis"><%= attribute1 %></div>' +
+            '<div class="is-item-attribute-2 is-text-overflow-ellipsis"><%= attribute2 %></div>' +
         '</div>',
     render: function() {
         if(this.isModelValid()) {
@@ -25,13 +25,15 @@ ItemView = Backbone.View.extend({
     appendTo: function(target) {
         if(this.isModelValid()) {
             this.$el.appendTo(target);
+            appendTooltipForEllipsis();
         }
         return this;
     },
     events: {
-        'click': 'alertMsg'
+        'click': 'itemSelect'
     },
-    alertMsg: function() {
+    itemSelect: function() {
+        this.$el.toggleClass('pressed');
         console.log(JSON.stringify(this.model.toJSON(), null, 4));
     },
     isModelValid: function() {
@@ -46,18 +48,34 @@ Items = Backbone.Collection.extend({
 ItemsView = Backbone.View.extend({
     cols: 4,
     rows: 3,
-    className: 'is-items-box',    
+    className: 'is-container bootstrap-style-border',
+    template:
+        '<div class="is-items-box clearfix"></div>' +
+        '<div class="is-separator-bar"></div>' + 
+        '<div class="is-bottom-bar clearfix">' +            
+            '<div class="is-buttons pull-right">' +
+                /*'<div class="btn-group">' +
+                    '<div class="btn btn-small">' +
+                        '<i class="icon-play"></i>' +
+                    '</div>' +
+                '</div>' +*/
+                '<div class="btn btn-small">Cancel</div>' +
+                '<div class="btn btn-primary btn-small">OK</div>' +                
+            '</div>' +
+            '<div class="is-status-bar"></div>' +
+        '</div>',        
     initialize: function() {
         this.collection = new Items(this.collection);
     },
     render: function() {
         if(this.isCollectionValid()) {
             var _this = this.clearView();
+            var $itemsBox = _this.$el.find('.is-items-box');
             this.collection.each(function(model, index) {
-                new ItemView({ model: model }).render().appendTo(_this.$el);
-                
+                new ItemView({ model: model }).render().appendTo($itemsBox);
+
                 if((index + 1) % _this.cols == 0) {
-                    _this.$el.append('<div class="is-clear-both"/>');
+                    $itemsBox.append('<div class="is-clear-both"/>');
                 }
             });
         }
@@ -68,9 +86,10 @@ ItemsView = Backbone.View.extend({
             this.$el.appendTo(target);
 
             if(this.collection.length / this.cols >= this.rows) {
-                this.$el.css({ 
-                    'overflow': 'auto',
-                    'width': this.$el.width() + getScrollbarWidth(),
+                var $itemsBox = this.$el.find('.is-items-box');
+                $itemsBox.css({ 
+                    overflow: 'auto',
+                    width: $itemsBox.width() + getScrollbarWidth(),
                     'max-height': this.$el.find('.is-item-box').first().outerHeight(true) * this.rows 
                 });
             }
@@ -81,14 +100,14 @@ ItemsView = Backbone.View.extend({
         return this.collection instanceof Items;
     },
     clearView: function() {
-        this.$el.empty();
+        this.$el.html(this.template);
         return this;
     }
 });
 
 /**
  * 1. Generate nested divs
- * 2. Calculate the width of inner div before and after scrollbar becomes visible.
+ * 2. Calculate the width of inner div before and after scrollbar becomes visible
  * @returns calculated scrollbar width
  */
 function getScrollbarWidth() {
@@ -107,4 +126,15 @@ function getScrollbarWidth() {
 
     $tempNode.remove();
     return withoutSroll - withScroll;
+}
+
+/**
+ * Apply tilte attribute to element which has text-overflow: ellipsis
+ */
+function appendTooltipForEllipsis() {
+    $('.is-text-overflow-ellipsis').each(function() {
+        if(this.offsetWidth < this.scrollWidth && !$(this).attr('title')) {
+            $(this).attr('title', $(this).text());
+        }
+    });
 }

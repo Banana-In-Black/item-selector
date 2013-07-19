@@ -3,23 +3,26 @@
 .is-clickable {
 	cursor: pointer;
 }
-.is-items-box {
+.is-container {
 	display:inline-block;
-	border: #5f6e41 1px solid;
-	/*border-radius: 5px;*/
 	margin: 5px;
-	padding: 5px;
-	box-shadow: 0 8px 6px -6px black;
 }
 .is-item-box {
 	position: relative;
-	border: #5f6e41 1px solid;
 	border-radius: 5px;
-	float: left;
 	height: 40px;
-	background-color: #d2e4ad;
+	border: 1px solid #f6e199;
+	background-color: #fff4a9;
 	margin: 5px;
 	padding: 5px;
+}
+.is-item-box:hover,
+.is-item-box.pressed {
+    border: 1px solid #dec673;
+    background-color: #f6e199;
+}
+.is-items-box {
+    margin: 5px;
 }
 .is-item-icon {
 	width: 40px;
@@ -43,14 +46,44 @@
 	line-height: 14px;
 	color: #000;
 }
-.is-text-ovlerfow-el {
+.is-text-overflow-ellipsis {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.is-lfloat {
-	float: left;
+.is-bottom-bar {
+    margin: 10px;
+}
+.is-bottom-bar > .is-status-bar {
+    margin-bottom: 0px;
+    height: 18px;
+    line-height: 18px;
+    padding-top: 3px;
+    padding-bottom: 3px;    
+}
+.is-buttons {
+    background-color: #fff;
+}
+.is-buttons > div {
+    margin-left: 10px;
+}
+.is-buttons > .btn {
+    width: 40px;
+}
+.is-separator-bar {
+    height: 1px;
+    background-color: #ccc;
 }
 .is-clear-both {
 	clear: both;
+}
+.is-clear-left {
+    clear: left;
+}
+.bootstrap-style-border {
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    background-clip: padding-box;
 }
