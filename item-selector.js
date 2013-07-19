@@ -30,9 +30,9 @@ ItemView = Backbone.View.extend({
         return this;
     },
     events: {
-        'click': 'itemSelect'
+        'click': 'selectItem'
     },
-    itemSelect: function() {
+    selectItem: function() {
         this.$el.toggleClass('pressed');
         console.log(JSON.stringify(this.model.toJSON(), null, 4));
     },
@@ -45,6 +45,13 @@ Items = Backbone.Collection.extend({
     model: Item
 });
 
+/**
+ * A View represents item collection.
+ * 
+ * Override callbacks to custimize behavior:
+ * - confirmSelection: Button 'OK'
+ * - cancelSelection: Button 'Cancel'
+ */
 ItemsView = Backbone.View.extend({
     cols: 4,
     rows: 3,
@@ -59,8 +66,8 @@ ItemsView = Backbone.View.extend({
                         '<i class="icon-play"></i>' +
                     '</div>' +
                 '</div>' +*/
-                '<div class="btn btn-small">Cancel</div>' +
-                '<div class="btn btn-primary btn-small">OK</div>' +                
+                '<div class="btn btn-small is-btn-cancel">Cancel</div>' +
+                '<div class="btn btn-primary btn-small is-btn-ok">OK</div>' +                
             '</div>' +
             '<div class="is-status-bar"></div>' +
         '</div>',        
@@ -102,6 +109,21 @@ ItemsView = Backbone.View.extend({
     clearView: function() {
         this.$el.html(this.template);
         return this;
+    },
+    events: {
+        'click .is-btn-cancel': 'cancelSelection', // not implement yet
+        'click .is-btn-ok': 'confirmSelection'
+    },
+    confirmSelection: function() {
+        var _this = this;
+        var selectedModels = new Array();
+        
+        this.$el.find('.is-item-box').each(function(index) {
+            if($(this).is('.pressed')) {
+                selectedModels.push(_this.collection.at(index).toJSON());
+            }
+        });
+        alert(JSON.stringify(selectedModels, '', 4));
     }
 });
 
