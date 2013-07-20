@@ -59,10 +59,12 @@
     height: 18px;
     line-height: 18px;
     padding-top: 3px;
-    padding-bottom: 3px;    
+    padding-bottom: 3px;
+    overflow: hidden;
 }
-.is-buttons {
-    background-color: #fff;
+.is-status-message {
+    display: inline-block;
+    padding: 0px 4px;
 }
 .is-buttons > div {
     margin-left: 10px;
@@ -76,9 +78,6 @@
 }
 .is-clear-both {
 	clear: both;
-}
-.is-clear-left {
-    clear: left;
 }
 .bootstrap-style-border {
     border: 1px solid #ccc;

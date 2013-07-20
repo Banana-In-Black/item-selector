@@ -39,7 +39,16 @@ $(function() {
     var items4 = items3.concat(items2);
     
     new ItemsView({     
-        collection: items
+        collection: items,
+        validate: function() {
+            console.log('No validate.');
+        },
+        ok: function(models) {
+            console.log(models);
+        },
+        cancel: function() {
+            console.log('cancel!');
+        }
     }).render().appendTo('body');
     
     $('body').append('<br/>');
@@ -58,6 +67,14 @@ $(function() {
     
     new ItemsView({     
         collection: items4
+    }).render().appendTo('body');
+    
+	$('body').append('<br/>');
+    
+    new ItemsView({     
+        collection: items4,
+        cols: 3,
+        rows: 4
     }).render().appendTo('body');
 })
 </script>
