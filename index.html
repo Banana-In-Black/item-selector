@@ -66,7 +66,24 @@ $(function() {
     $('body').append('<br/>');
     
     new ItemsView({     
-        collection: items4
+        collection: items4,
+        /**
+         * Overrite to custimize behavior
+         * @param selectedModels the models which is selected in item-selector
+         * @return error message; return null or nothing if validation is passed
+         */
+        validate: function(selectedModels) {
+            if(selectedModels.length < 1) {
+                return 'Please select at least 1 item.';
+            }
+        },
+        /**
+         * Overrite to custimize behavior
+         * @param selectedModels the models which is selected in item-selector
+         */
+        ok: function(selectedModels) {
+            alert(JSON.stringify(selectedModels, '', 4));
+        }
     }).render().appendTo('body');
     
 	$('body').append('<br/>');

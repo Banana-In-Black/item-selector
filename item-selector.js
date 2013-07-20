@@ -119,9 +119,6 @@ ItemsView = Backbone.View.extend({
     doCallback: function(func, args) {
         if($.isFunction(func)) {
             return func.apply(this, args);
-        } else {
-            console.log('Not a function!');
-            return null;
         }
     },
     events: {
@@ -165,23 +162,6 @@ ItemsView = Backbone.View.extend({
         this.$el.find('.is-status-bar')
             .removeClass('alert')
             .empty();
-    },
-    /**
-     * Overrite to custimize behavior
-     * @param selectedModels the models which is selected in item-selector
-     * @return error message; return null or nothing if validation is passed
-     */
-    validate: function(selectedModels) {
-        if(selectedModels.length < 1) {
-            return 'Please select at least 1 item.';
-        }
-    },
-    /**
-     * Overrite to custimize behavior
-     * @param selectedModels the models which is selected in item-selector
-     */
-    ok: function(selectedModels) {
-        alert(JSON.stringify(selectedModels, '', 4));
     }
 });
 
