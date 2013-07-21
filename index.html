@@ -6,6 +6,7 @@
 <title>item-selector example</title>
 
 <script src="lib/jquery-1.10.2.js"></script>
+<script src="lib/jquery-ui-1.10.3.js"></script>
 <script src="lib/backbone-dependency/underscore-1.5.1.js"></script>
 <script src="lib/backbone-1.0.0.js"></script>
 <script src="item-selector.js"></script>
@@ -19,9 +20,7 @@ $(function() {
         name: 'testItem1'
     }, {
         attribute1: 'This is for long text testing.'
-    }];
-    
-    var items2 = [{
+    }, {
         name: 'testItem1'
     }, {
         attribute1: 'This is for long text testing.'
@@ -35,38 +34,14 @@ $(function() {
         name: 'test6'
     }];
     
-    var items3 = items.concat(items2).concat(items);
-    var items4 = items3.concat(items2);
+    items = items.concat(items).concat(items);
     
+    itemsView = 
     new ItemsView({     
+        cols: 4,
+        rows: 4,
         collection: items,
-        validate: function() {
-            console.log('No validate.');
-        },
-        ok: function(models) {
-            console.log(models);
-        },
-        cancel: function() {
-            console.log('cancel!');
-        }
-    }).render().appendTo('body');
-    
-    $('body').append('<br/>');
-    
-    new ItemsView({     
-        collection: items2
-    }).render().appendTo('body');
-    
-    $('body').append('<br/>');
-    
-    new ItemsView({     
-        collection: items3
-    }).render().appendTo('body');
-    
-    $('body').append('<br/>');
-    
-    new ItemsView({     
-        collection: items4,
+        draggable: true,
         /**
          * Overrite to custimize behavior
          * @param selectedModels the models which is selected in item-selector
@@ -84,14 +59,6 @@ $(function() {
         ok: function(selectedModels) {
             alert(JSON.stringify(selectedModels, '', 4));
         }
-    }).render().appendTo('body');
-    
-	$('body').append('<br/>');
-    
-    new ItemsView({     
-        collection: items4,
-        cols: 3,
-        rows: 4
     }).render().appendTo('body');
 })
 </script>

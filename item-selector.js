@@ -16,6 +16,11 @@ ItemView = Backbone.View.extend({
             '<div class="is-item-attribute-1 is-text-overflow-ellipsis"><%= attribute1 %></div>' +
             '<div class="is-item-attribute-2 is-text-overflow-ellipsis"><%= attribute2 %></div>' +
         '</div>',
+    initialize: function() {
+        if(this.isModelValid()) {
+            this.listenTo(this.model, 'change', this.render);
+        }
+    },
     render: function() {
         if(this.isModelValid()) {
             this.$el.html(_.template(this.template, this.model.toJSON()));
@@ -64,25 +69,29 @@ ItemsView = Backbone.View.extend({
         '<div class="is-separator-bar"></div>' + 
         '<div class="is-bottom-bar clearfix">' +            
             '<div class="is-buttons pull-right">' +
-                /*'<div class="btn-group">' +
-                    '<div class="btn btn-small">' +
-                        '<i class="icon-play"></i>' +
-                    '</div>' +
-                '</div>' +*/
                 '<div class="btn btn-small is-btn-cancel">Cancel</div>' +
                 '<div class="btn btn-primary btn-small is-btn-ok">OK</div>' +                
             '</div>' +
             '<div class="is-status-bar"></div>' +
         '</div>',        
     initialize: function() {
-        this.collection = new Items(this.collection);
         this.cols = this.options.cols || this.cols;
         this.rows = this.options.rows || this.rows;
+        
+        if(!this.isCollectionValid()) {
+            this.collection = new Items(this.collection);
+            this.listenTo(this.collection, 'add', this.render);
+            this.listenTo(this.collection, 'remove', this.render);
+        }
+        
+        if(this.options.draggable && $.isFunction(this.$el.draggable)) {
+            this.$el.draggable();
+        }
     },
     render: function() {
         if(this.isCollectionValid()) {
             var _this = this.clearView();
-            var $itemsBox = _this.$el.find('.is-items-box');
+            var $itemsBox = _this.$('.is-items-box');
             this.collection.each(function(model, index) {
                 var itemView = new ItemView({ model: model }).render().appendTo($itemsBox);
                 _this.listenTo(itemView, 'select', _this.clearMessage);
@@ -98,12 +107,12 @@ ItemsView = Backbone.View.extend({
         if(this.isCollectionValid()) {
             this.$el.appendTo(target);
 
-            if(this.collection.length / this.cols >= this.rows) {
-                var $itemsBox = this.$el.find('.is-items-box');
+            if(this.collection.length / this.cols > this.rows) {
+                var $itemsBox = this.$('.is-items-box');
                 $itemsBox.css({ 
                     overflow: 'auto',
                     width: $itemsBox.width() + getScrollbarWidth(),
-                    'max-height': this.$el.find('.is-item-box').first().outerHeight(true) * this.rows 
+                    'max-height': this.$('.is-item-box').first().outerHeight(true) * this.rows 
                 });
             }
         }
@@ -129,7 +138,7 @@ ItemsView = Backbone.View.extend({
         var _this = this;
         var selectedModels = new Array();
         
-        this.$el.find('.is-item-box').each(function(index) {
+        this.$('.is-item-box').each(function(index) {
             if($(this).is('.pressed')) {
                 selectedModels.push(_this.collection.at(index).toJSON());
             }
@@ -150,7 +159,7 @@ ItemsView = Backbone.View.extend({
      * @param msg message to show on status bar
      */
     alertMessage: function(msg) {
-        this.$el.find('.is-status-bar')
+        this.$('.is-status-bar')
             .addClass('alert')
             .append('<span class="label label-warning">Warning</span>')
             .append('<span class="is-status-message is-text-overflow-ellipsis">' + msg + '</span>');
@@ -159,7 +168,7 @@ ItemsView = Backbone.View.extend({
      * Clear message on status bar
      */
     clearMessage: function() {
-        this.$el.find('.is-status-bar')
+        this.$('.is-status-bar')
             .removeClass('alert')
             .empty();
     }

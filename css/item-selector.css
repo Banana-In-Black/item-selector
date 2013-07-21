@@ -6,12 +6,14 @@
 .is-container {
 	display:inline-block;
 	margin: 5px;
+	background-color: #fff;
+	z-index: 10;
 }
 .is-item-box {
 	position: relative;
 	border-radius: 5px;
 	height: 40px;
-	border: 1px solid #f6e199;
+	border: 1px solid #dec673;
 	background-color: #fff4a9;
 	margin: 5px;
 	padding: 5px;
@@ -19,7 +21,7 @@
 .is-item-box:hover,
 .is-item-box.pressed {
     border: 1px solid #dec673;
-    background-color: #f6e199;
+    background-color: #dec673;
 }
 .is-items-box {
     margin: 5px;
