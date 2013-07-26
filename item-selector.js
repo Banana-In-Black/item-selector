@@ -18,18 +18,19 @@ ItemView = Backbone.View.extend({
         '</div>',
     initialize: function() {
         if(this.isModelValid()) {
-            this.listenTo(this.model, 'change', this.render);
+            var _this = this;
+            this.listenTo(this.model, 'change', function() { _this.render(); });
         }
     },
-    render: function() {
+    render: function(target) {
         if(this.isModelValid()) {
             this.$el.html(_.template(this.template, this.model.toJSON()));
-        }
-        return this;
-    },
-    appendTo: function(target) {
-        if(this.isModelValid()) {
-            this.$el.appendTo(target);
+            
+            this.target = target || this.target;
+            if(target) {
+                this.$el.appendTo(this.target);
+            }
+            
             appendTooltipForEllipsis();
         }
         return this;
@@ -61,6 +62,7 @@ Items = Backbone.Collection.extend({
  * - rows: the number of rows to display
  */
 ItemsView = Backbone.View.extend({
+    target: null, // A DOM which this view will be appended to
     cols: 4,
     rows: 3,
     className: 'is-container bootstrap-style-border',
@@ -69,44 +71,46 @@ ItemsView = Backbone.View.extend({
         '<div class="is-separator-bar"></div>' + 
         '<div class="is-bottom-bar clearfix">' +            
             '<div class="is-buttons pull-right">' +
-                '<div class="btn btn-small is-btn-cancel">Cancel</div>' +
-                '<div class="btn btn-primary btn-small is-btn-ok">OK</div>' +                
+                '<button class="btn btn-small is-btn-cancel">Cancel</button>' +
+                '<button class="btn btn-primary btn-small is-btn-ok">OK</button>' +                
             '</div>' +
             '<div class="is-status-bar"></div>' +
         '</div>',        
     initialize: function() {
+        var _this = this;
         this.cols = this.options.cols || this.cols;
         this.rows = this.options.rows || this.rows;
         
         if(!this.isCollectionValid()) {
             this.collection = new Items(this.collection);
-            this.listenTo(this.collection, 'add', this.render);
-            this.listenTo(this.collection, 'remove', this.render);
+            this.listenTo(this.collection, 'add', function() { _this.render(); });
+            this.listenTo(this.collection, 'remove', function() { _this.render(); });
         }
         
         if(this.options.draggable && $.isFunction(this.$el.draggable)) {
             this.$el.draggable();
         }
     },
-    render: function() {
+    render: function(target) {
         if(this.isCollectionValid()) {
             var _this = this.clearView();
             var $itemsBox = _this.$('.is-items-box');
             this.collection.each(function(model, index) {
-                var itemView = new ItemView({ model: model }).render().appendTo($itemsBox);
+                var itemView = new ItemView({ model: model }).render($itemsBox);
                 _this.listenTo(itemView, 'select', _this.clearMessage);
 
+                // Setting columns
                 if((index + 1) % _this.cols == 0) {
                     $itemsBox.append('<div class="is-clear-both"/>');
                 }
             });
-        }
-        return this;
-    },
-    appendTo: function(target) {
-        if(this.isCollectionValid()) {
-            this.$el.appendTo(target);
 
+            this.target = target || this.target;
+            if(target) {
+                this.$el.appendTo(this.target);
+            }
+            
+            // Setting rows
             if(this.collection.length / this.cols > this.rows) {
                 var $itemsBox = this.$('.is-items-box');
                 $itemsBox.css({ 

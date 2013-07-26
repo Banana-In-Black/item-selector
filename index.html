@@ -9,10 +9,12 @@
 <script src="lib/jquery-ui-1.10.3.js"></script>
 <script src="lib/backbone-dependency/underscore-1.5.1.js"></script>
 <script src="lib/backbone-1.0.0.js"></script>
+<script src="lib/bootstrap-2.3.2.js"></script>
 <script src="item-selector.js"></script>
 
-<link rel=stylesheet type="text/css" href="css/bootstrap.css">
-<link rel=stylesheet type="text/css" href="css/item-selector.css">
+<link rel="stylesheet" type="text/css" href="css/normalize.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="css/item-selector.css">
 
 <script type="text/javascript">
 $(function() {
@@ -59,12 +61,61 @@ $(function() {
         ok: function(selectedModels) {
             alert(JSON.stringify(selectedModels, '', 4));
         }
-    }).render().appendTo('body');
+    }).render('body');
+    
+    
+    /* Control-panel functions */
+    $('.control-panel').find('.add').click(function(event) {
+        event.preventDefault();
+        console.log({
+            name: $('input.name').val(),
+            attribute1: $('input.attribute1').val(),
+            attribute2: $('input.attribute2').val()
+        });
+        itemsView.collection.add(
+            new Item({
+                name: $('input.name').val(),
+                attribute1: $('input.attribute1').val(),
+                attribute2: $('input.attribute2').val()
+            }));
+    });
 })
 </script>
+
+<style type="text/css">
+body > * {
+    vertical-align: top;
+}
+.control-panel {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    box-shadow: 0 5px 10px rgba(0,0,0,.2);
+    background-clip: padding-box;
+}
+.button-panel {
+    text-align: right;
+}
+</style>
 </head>
 
 <body>
+<form name="inputForm" class="control-panel">
+    <label>Name</label>
+    <input type="text" class="name" placeholder="Item Name"/>
+    <label>Attribute 1</label>
+    <input type="text" class="attribute1" placeholder="Item Attribute"/>
+    <label>Attribute 2</label>
+    <input type="text" class="attribute2" placeholder="Item Attribute"/>
+    <div class="button-panel">
+        <button class="btn btn-small add">
+            <i class="icon-plus"></i> Add
+        </button>
+    </div>
+</form>
 </body>
 
 </html>

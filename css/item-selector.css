@@ -7,7 +7,6 @@
 	display:inline-block;
 	margin: 5px;
 	background-color: #fff;
-	z-index: 10;
 }
 .is-item-box {
 	position: relative;
@@ -38,7 +37,7 @@
 	width: 150px;
 }
 .is-item-attributes > div {
-	font-size: 10px;
+	font-size: 11px;
 	font-family: 'Courier New';
 	line-height: 13px;
 	color: #3C422E;
@@ -68,11 +67,9 @@
     display: inline-block;
     padding: 0px 4px;
 }
-.is-buttons > div {
-    margin-left: 10px;
-}
 .is-buttons > .btn {
-    width: 40px;
+    width: 60px;
+    margin-left: 10px;
 }
 .is-separator-bar {
     height: 1px;
