@@ -97,7 +97,9 @@ ItemsView = Backbone.View.extend({
             var $itemsBox = _this.$('.is-items-box');
             this.collection.each(function(model, index) {
                 var itemView = new ItemView({ model: model }).render($itemsBox);
-                _this.listenTo(itemView, 'select', _this.clearMessage);
+                _this.listenTo(itemView, 'select', function() {
+                    _this.showMessage(_this.$('.pressed').size() + ' item(s) was(were) selected.', 'info');
+                });
 
                 // Setting columns
                 if((index + 1) % _this.cols == 0) {
@@ -151,7 +153,7 @@ ItemsView = Backbone.View.extend({
         this.clearMessage();
         var errorMessage = this.doCallback(this.options.validate, [selectedModels]);
         if(errorMessage) {
-            this.alertMessage(errorMessage);
+            this.showMessage(errorMessage);
         } else {
             this.doCallback(this.options.ok, [selectedModels]);
         }
@@ -161,11 +163,16 @@ ItemsView = Backbone.View.extend({
     },
     /**
      * @param msg message to show on status bar
+     * @level info|warn, default is warn
      */
-    alertMessage: function(msg) {
+    showMessage: function(msg, level) {
+        var levelMap = {
+            info: 'alert-info'
+        };
+        
+        this.clearMessage();
         this.$('.is-status-bar')
-            .addClass('alert')
-            .append('<span class="label label-warning">Warning</span>')
+            .addClass('alert').addClass(levelMap[level])
             .append('<span class="is-status-message is-text-overflow-ellipsis">' + msg + '</span>');
     },
     /**
@@ -174,6 +181,7 @@ ItemsView = Backbone.View.extend({
     clearMessage: function() {
         this.$('.is-status-bar')
             .removeClass('alert')
+            .removeClass('alert-info')
             .empty();
     }
 });
