@@ -19,6 +19,7 @@ ItemView = Backbone.View.extend({
     initialize: function() {
         if(this.isModelValid()) {
             var _this = this;
+            this.listenTo(this.model, 'destroy', this.remove);
             this.listenTo(this.model, 'change', function() { _this.render(); });
         }
     },
@@ -64,18 +65,24 @@ Items = Backbone.Collection.extend({
 ItemsView = Backbone.View.extend({
     target: null, // A DOM which this view will be appended to
     cols: 4,
-    rows: 3,
+    rows: 4,
     className: 'is-container bootstrap-style-border',
     template:
         '<div class="is-items-box clearfix"></div>' +
         '<div class="is-separator-bar"></div>' + 
         '<div class="is-bottom-bar clearfix">' +            
             '<div class="is-buttons pull-right">' +
+                '<input type="search" class="is-search-input" placeholder="Search item by name..." />' +
                 '<button class="btn btn-small is-btn-cancel">Cancel</button>' +
                 '<button class="btn btn-primary btn-small is-btn-ok">OK</button>' +                
             '</div>' +
             '<div class="is-status-bar"></div>' +
-        '</div>',        
+        '</div>',
+    events: {
+        'click .is-btn-cancel': 'cancel', // not implement yet
+        'click .is-btn-ok': 'ok',
+        'keyup .is-search-input': 'filter'
+    },
     initialize: function() {
         var _this = this;
         this.cols = this.options.cols || this.cols;
@@ -83,28 +90,27 @@ ItemsView = Backbone.View.extend({
         
         if(!this.isCollectionValid()) {
             this.collection = new Items(this.collection);
-            this.listenTo(this.collection, 'add', function() { _this.render(); });
-            this.listenTo(this.collection, 'remove', function() { _this.render(); });
+            this.listenTo(this.collection, 'add', function(model) { _this.createItemView(model); });
+            this.listenTo(this.collection, 'remove', function(model) { model.destroy(); });
         }
         
         if(this.options.draggable && $.isFunction(this.$el.draggable)) {
             this.$el.draggable();
         }
     },
+    createItemView: function(model) {
+        var _this = this;
+        var $itemsBox = _this.$('.is-items-box');
+        var itemView = new ItemView({ model: model }).render($itemsBox);
+        this.listenTo(itemView, 'select', function() {
+            _this.showMessage(_this.$('.pressed').size() + ' item(s) was(were) selected.', 'info');
+        });
+    },
     render: function(target) {
         if(this.isCollectionValid()) {
             var _this = this.clearView();
-            var $itemsBox = _this.$('.is-items-box');
-            this.collection.each(function(model, index) {
-                var itemView = new ItemView({ model: model }).render($itemsBox);
-                _this.listenTo(itemView, 'select', function() {
-                    _this.showMessage(_this.$('.pressed').size() + ' item(s) was(were) selected.', 'info');
-                });
-
-                // Setting columns
-                if((index + 1) % _this.cols == 0) {
-                    $itemsBox.append('<div class="is-clear-both"/>');
-                }
+            this.collection.each(function(model) {
+                _this.createItemView(model);
             });
 
             this.target = target || this.target;
@@ -112,13 +118,17 @@ ItemsView = Backbone.View.extend({
                 this.$el.appendTo(this.target);
             }
             
+            var $itemBox = this.$('.is-item-box').first();
+            var $itemsBox = this.$('.is-items-box');
+            // Setting columns
+            $itemsBox.css({ 
+                width: $itemBox.outerWidth(true) * this.cols + getScrollbarWidth(),
+            });
             // Setting rows
             if(this.collection.length / this.cols > this.rows) {
-                var $itemsBox = this.$('.is-items-box');
                 $itemsBox.css({ 
                     overflow: 'auto',
-                    width: $itemsBox.width() + getScrollbarWidth(),
-                    'max-height': this.$('.is-item-box').first().outerHeight(true) * this.rows 
+                    'max-height': $itemBox.outerHeight(true) * this.rows 
                 });
             }
         }
@@ -135,11 +145,7 @@ ItemsView = Backbone.View.extend({
         if($.isFunction(func)) {
             return func.apply(this, args);
         }
-    },
-    events: {
-        'click .is-btn-cancel': 'cancel', // not implement yet
-        'click .is-btn-ok': 'ok'
-    },
+    },    
     ok: function() {
         var _this = this;
         var selectedModels = new Array();
@@ -183,6 +189,16 @@ ItemsView = Backbone.View.extend({
             .removeClass('alert')
             .removeClass('alert-info')
             .empty();
+    },
+    filter: function() {
+        this.$('.hide').removeClass('hide');
+        
+        var filterText = $('.is-search-input').val();
+        this.$('.is-item-box').each(function() {
+            if(!new RegExp(filterText, 'ig').test($(this).find('.is-item-name').text())) {
+                $(this).addClass('hide');
+            }
+        });
     }
 });
 
